@@ -20,6 +20,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -38,7 +46,7 @@ public class ParseJson extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ParserConfigurationException, SAXException {
         String dataDirectory = System.getenv("OPENSHIFT_DATA_DIR");
         File xmlFile = new File(dataDirectory + "myData.txt");
         String starter = "";
@@ -160,6 +168,23 @@ public class ParseJson extends HttpServlet {
             bw.close();          
         }
         File readingFile =  new File(dataDirectory + "myData.txt");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(readingFile);
+        doc.getDocumentElement().normalize();
+        
+        NodeList nDatabases = doc.getElementsByTagName("database");
+        List<Database> databases = new ArrayList<>();
+        
+        for (int i = 0; i < nDatabases.getLength(); i++) {
+            Node nDatabase = nDatabases.item(i);
+            Element eDatabase = (Element) nDatabase;
+            int databaseId = Integer.parseInt(eDatabase.getElementsByTagName("id").item(0).getTextContent());
+            String databaseName = eDatabase.getElementsByTagName("name").item(0).getTextContent();
+        }
+        
+        
+        
         BufferedReader reader = new BufferedReader(new FileReader(readingFile));
         String line = "";
         String content = "";
@@ -170,8 +195,6 @@ public class ParseJson extends HttpServlet {
         
         String tester = "Testing";
         request.setAttribute("savedData", content);
-        request.setAttribute("test", tester);
-        request.setAttribute("test2", starter);
         request.getRequestDispatcher("ShowCurrent.jsp").forward(request, response);
         
     }

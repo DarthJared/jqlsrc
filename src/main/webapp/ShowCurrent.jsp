@@ -14,6 +14,5 @@
     <body>
         <div><c:out value="${savedData}" /></div>
         <div><c:out value="${test}" /></div>
-
     </body>
 </html>
