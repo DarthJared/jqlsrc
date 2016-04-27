@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -181,20 +183,60 @@ public class ParseJson extends HttpServlet {
             Element eDatabase = (Element) nDatabase;
             int databaseId = Integer.parseInt(eDatabase.getElementsByTagName("id").item(0).getTextContent());
             String databaseName = eDatabase.getElementsByTagName("name").item(0).getTextContent();
+            
+            NodeList nTables = eDatabase.getElementsByTagName("table");
+            ArrayList<Table> tables = new ArrayList<>();
+            for (int j = 0; j < nTables.getLength(); j++) {
+                Node nTable = nTables.item(j);
+                Element eTable = (Element) nTable;
+                int tableId = Integer.parseInt(eTable.getElementsByTagName("table_id").item(0).getTextContent());
+                String tableTitle = eTable.getElementsByTagName("title").item(0).getTextContent();
+                
+                NodeList nColumns = eTable.getElementsByTagName("column");
+                ArrayList<Column> columns = new ArrayList<>();
+                for (int k = 0; k < nColumns.getLength(); k++) {
+                    Node nColumn = nColumns.item(k);
+                    Element eColumn = (Element) nColumn;
+                    int columnId = Integer.parseInt(eColumn.getElementsByTagName("column_id").item(0).getTextContent());
+                    String columnName = eColumn.getElementsByTagName("column_name").item(0).getTextContent();
+                    String dataType = eColumn.getElementsByTagName("data_type").item(0).getTextContent();
+                    
+                    NodeList nRelationships = eColumn.getElementsByTagName("relationship");
+                    ArrayList<Relationship> relationships = new ArrayList<>();
+                    for (int l = 0; l < nRelationships.getLength(); l++) {
+                        Node nRelationship = nRelationships.item(l);
+                        Element eRelationship = (Element) nRelationship;
+                        int rTableId = Integer.parseInt(eRelationship.getElementsByTagName("table_id").item(0).getTextContent());
+                        int rColumnId = Integer.parseInt(eRelationship.getElementsByTagName("column_id").item(0).getTextContent());
+                        int relationshipType = Integer.parseInt(eRelationship.getElementsByTagName("relationship_type").item(0).getTextContent());
+                        
+                        Relationship rAdder = new Relationship(rTableId, rColumnId, relationshipType);
+                        relationships.add(rAdder);
+                    }                    
+                    Column cAdder = new Column(columnId, columnName, dataType, relationships);
+                    columns.add(cAdder);
+                }                
+                Table tAdder = new Table(tableId, tableTitle, columns);
+                tables.add(tAdder);
+            }   
+            Database dAdder = new Database(databaseId, databaseName, tables);
+            databases.add(dAdder);
         }
         
         
         
-        BufferedReader reader = new BufferedReader(new FileReader(readingFile));
-        String line = "";
-        String content = "";
         
-        while((line = reader.readLine()) != null) {
-            content += line;
-        }       
+//        BufferedReader reader = new BufferedReader(new FileReader(readingFile));
+//        String line = "";
+//        String content = "";
+//        
+//        while((line = reader.readLine()) != null) {
+//            content += line;
+//        }       
+//        
+//        String tester = "Testing";
         
-        String tester = "Testing";
-        request.setAttribute("savedData", content);
+        request.setAttribute("savedDatabases", databases);
         request.getRequestDispatcher("ShowCurrent.jsp").forward(request, response);
         
     }
@@ -211,7 +253,13 @@ public class ParseJson extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(ParseJson.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(ParseJson.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -225,7 +273,13 @@ public class ParseJson extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(ParseJson.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(ParseJson.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

@@ -1,1 +1,5 @@
+JQL\Database.class
+JQL\Table.class
 JQL\ParseJson.class
+JQL\Relationship.class
+JQL\Column.class

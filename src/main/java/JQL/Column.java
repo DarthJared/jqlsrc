@@ -5,6 +5,8 @@
  */
 package JQL;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Jbeag_000
@@ -13,7 +15,7 @@ public class Column {
     private int id;
     private String columnName;
     private String dataType;
-    private Relationship relation;
+    private ArrayList<Relationship> relation;
 
     public int getId() {
         return id;
@@ -39,15 +41,15 @@ public class Column {
         this.dataType = dataType;
     }
 
-    public Relationship getRelation() {
+    public ArrayList<Relationship> getRelation() {
         return relation;
     }
 
-    public void setRelation(Relationship relation) {
+    public void setRelation(ArrayList<Relationship> relation) {
         this.relation = relation;
     }
 
-    public Column(int id, String columnName, String dataType, Relationship relation) {
+    public Column(int id, String columnName, String dataType, ArrayList<Relationship> relation) {
         this.id = id;
         this.columnName = columnName;
         this.dataType = dataType;
