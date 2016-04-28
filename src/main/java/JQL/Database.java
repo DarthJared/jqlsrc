@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Database {
     private int id;
     private String name;
-    private ArrayList<Table> tables;
+    private String path;
 
     public int getId() {
         return id;
@@ -22,6 +22,14 @@ public class Database {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getName() {
@@ -32,17 +40,9 @@ public class Database {
         this.name = name;
     }
 
-    public ArrayList<Table> getTables() {
-        return tables;
-    }
-
-    public void setTables(ArrayList<Table> tables) {
-        this.tables = tables;
-    }
-
-    public Database(int id, String name, ArrayList<Table> tables) {
+    public Database(int id, String name, String path) {
         this.id = id;
         this.name = name;
-        this.tables = tables;
+        this.path = path;
     }
 }
